@@ -1,0 +1,21 @@
+{% extends 'layouts/base.html' %}
+
+{% block styles %}{% endblock %}
+
+{% block main %}
+
+<main class="p-4 flex flex-col gap-4">
+    <h2 class="text-3xl">My Faces</h2>
+    <p>This faces are stored and used to allow the facial recognition. You currently have <span id="facesQuantity">0</span> faces.</p>
+    
+    <div id="faces"></div>
+
+    <div class="d-grid">
+        <button id="btnLogin" class="btn btn-primary">
+            Add Face
+        </button>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

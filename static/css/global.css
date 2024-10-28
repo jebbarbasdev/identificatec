@@ -1,0 +1,20 @@
+.divider {
+    --divider-color: #ddd;
+    display: flex;
+    align-items: center;
+    text-align: center;  
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--divider-color);
+}
+
+.divider:not(:empty)::before {
+    margin-right: .5em;
+}
+.divider:not(:empty)::after {
+    margin-left: .5em;
+}

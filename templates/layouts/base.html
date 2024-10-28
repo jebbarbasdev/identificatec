@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }} - Identificatec</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/snackbar.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css')}}">
+    
+    {% block styles %}{% endblock %}
+    
+    <script src="{{ url_for('static', filename='js/snackbar.min.js') }}"></script>
+</head>
+
+<body data-bs-theme="dark">
+    <div class="d-flex flex-column" style="min-height: 100dvh;">
+        {% include 'layouts/header.html' %}
+        {% block main %}{% endblock %}
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/lib/bootstrap.bundle.min.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
