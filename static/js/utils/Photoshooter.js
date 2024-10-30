@@ -3,6 +3,8 @@
 export class Photoshooter {
     /** @type {HTMLDivElement} */ #wrapper
     /** @type {HTMLVideoElement} */ #video
+    /** @type {HTMLCanvasElement} */ #canvas
+    /** @type {CanvasRenderingContext2D} */ #canvasContext
 
     #streaming
     /** @type {MediaStream|null} */ #stream
@@ -24,9 +26,17 @@ export class Photoshooter {
 
         this.#video = document.createElement('video')
         Object.assign(this.#video, {
-            style: 'width: 100%; height: 100%; position: absolute; object-fit: cover;',
+            style: 'width: 100%; height: 100%; position: absolute; object-fit: cover; display: block;',
             autoplay: true
         })
+
+        this.#canvas = document.createElement('canvas')
+        Object.assign(this.#canvas, {
+            style: 'width: 100%; height: 100%; position: absolute; object-fit: cover; display: none;',
+        })
+
+        //@ts-ignore
+        this.#canvasContext = this.#canvas.getContext('2d')
 
         this.#wrapper.appendChild(this.#video)
         wrapper?.replaceWith(this.#wrapper)
@@ -72,11 +82,18 @@ export class Photoshooter {
 
     get #isMirrored() { return this.#facingMode === 'user' }
 
+    #unfreeze() {
+        this.#video.style.display = 'block'
+        this.#canvas.style.display = 'none'
+    }
+
     async start() {
         if (!this.#streaming) {
             const [stream, track] = await this.#getUserVideoStream()
             this.#setFacingModeUsingTrack(track)
     
+            this.#unfreeze()
+
             this.#video.style.transform = this.#isMirrored ? 'scaleX(-1)' : ''
             this.#video.srcObject = stream
             this.#video.play() // In case autoplay was blocked
@@ -86,8 +103,20 @@ export class Photoshooter {
         }
     }
 
-    stop() {
+    #freeze() {
+        this.#video.style.display = 'block'
+        this.#canvas.style.display = 'none'
+
+        this.#canvas.height = this.#video.videoHeight
+        this.#canvas.width = this.#video.videoWidth
+
+        this.#canvasContext.drawImage(this.#video, 0, 0)
+    }
+
+    stop(freeze = false) {
         if (this.#streaming && this.#stream) {
+            freeze ? this.#freeze() : this.#unfreeze()
+
             this.#stream.getTracks().forEach(
                 track => track.stop()
             )

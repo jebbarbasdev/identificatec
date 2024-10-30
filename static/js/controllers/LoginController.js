@@ -14,8 +14,6 @@ const _authService = new AuthService()
 
 const photoshooter = new Photoshooter('#photoshooter')
 
-Object.assign(window, { photoshooter })
-
 const txtEmail = $('#txtEmail')
 const txtPassword = $('#txtPassword')
 

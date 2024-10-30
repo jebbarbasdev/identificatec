@@ -42,6 +42,16 @@ export class DummyQuery {
     }
 
     /**
+     * @param {string} prop 
+     * @param {any} [value]
+     */
+    css(prop, value) {
+        if (value === undefined) return this.match.style[prop]
+        this.#matches.forEach(match => match.style[prop] = value)
+        return this
+    }
+
+    /**
      * @param {string} event 
      * @param {any} listener 
      */
