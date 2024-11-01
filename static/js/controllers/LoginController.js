@@ -1,15 +1,13 @@
 //@ts-check
 
-import { FlaskAImageService } from '../utils/FlaskAImageService.js'
 import { AuthService } from '../services/AuthService.js'
 import { State } from '../utils/State.js'
-import { $, DummyQuery } from '../utils/$.js'
+import { $ } from '../utils/$.js'
 import { snackDanger } from '../utils/snacks.js'
 import { Photoshooter } from '../utils/Photoshooter.js'
 
 const bootstrap = globalThis.bootstrap
 
-const _flaskAImageService = new FlaskAImageService()
 const _authService = new AuthService()
 
 const photoshooter = new Photoshooter('#photoshooter')

@@ -16,7 +16,7 @@ load_dotenv()
 
 # App Configuration
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY')
+app.secret_key = os.environ.get('APP_SECRET_KEY')
 
 # Pipelines
 @app.template_filter('urlencode')

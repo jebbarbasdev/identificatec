@@ -6,7 +6,7 @@ export class AuthService {
     static #instance
 
     constructor() {
-        if (AuthService.#instance !== null) return AuthService.#instance
+        if (AuthService.#instance != null) return AuthService.#instance
         AuthService.#instance = this
     }
 
@@ -26,8 +26,7 @@ export class AuthService {
         if (!res.ok) {
             return snackDanger(resJson.message)
         }
-        else {
-            window.location.href = resJson.data.redirect_url
-        }   
+         
+        window.location.href = resJson.data.redirect_url
     }
 }

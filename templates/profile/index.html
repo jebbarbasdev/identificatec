@@ -8,13 +8,14 @@
     <h2 class="text-3xl">My Faces</h2>
     <p>This faces are stored and used to allow the facial recognition. You currently have <span id="facesQuantity">0</span> faces.</p>
     
-    <div id="faces"></div>
-
-    <div class="d-grid">
+    <div class="d-grid mb-3">
         <button id="btnAddFace" class="btn btn-primary">
             Add Face
         </button>
     </div>
+
+    <div id="faces" class="d-flex justify-content-around flex-wrap gap-3"></div>
+
 </main>
 
 {% include 'profile/mdlTakePhoto.html' %}

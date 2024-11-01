@@ -36,4 +36,8 @@ class Result(Generic[T]):
     @staticmethod
     def from_not_found(message: str):
         return Result.create(404, message, None)
+    
+    @staticmethod
+    def from_bad_request(message: str):
+        return Result.create(400, message, None)
         

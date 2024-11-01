@@ -28,5 +28,5 @@ function snack(backgroundColor, textColor) {
     return snackFn
 }
 
-export const snackDanger = snack('#dc2626', '#fecaca')
-export const snackPrimary = snack('var(--primary)', 'var(--on-primary)')
+export const snackDanger = snack('var(--bs-danger)', 'white')
+export const snackSuccess = snack('var(--bs-success)', 'white')

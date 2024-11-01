@@ -138,17 +138,17 @@ class User(UserMixin):
         users = psql("""
             SELECT 
                 id,
-                password,
-                deleted
+                password
             FROM auth.user
-            WHERE email = %s
+            WHERE 
+                email = %s AND
+                NOT deleted
         """, [email])
 
         if len(users) == 0: return None
 
-        user_id, user_password, user_deleted = users[0]
+        user_id, user_password = users[0]
 
-        if user_deleted: return None
         if not check_password_hash(user_password, password): return None
 
         return User.from_id(user_id)

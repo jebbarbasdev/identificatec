@@ -39,6 +39,7 @@ export class Photoshooter {
         this.#canvasContext = this.#canvas.getContext('2d')
 
         this.#wrapper.appendChild(this.#video)
+        this.#wrapper.appendChild(this.#canvas)
         wrapper?.replaceWith(this.#wrapper)
         
         const desiredFacingMode = initOptions?.initialFacingMode ?? 'user'
@@ -103,14 +104,36 @@ export class Photoshooter {
         }
     }
 
+    #drawVideoFrameInCanvas() {
+        // Establece el tamaño del canvas para que coincida con el video
+        this.#canvas.width = this.#video.videoWidth;
+        this.#canvas.height = this.#video.videoHeight;
+
+        const mirrored = this.#isMirrored
+
+        // Si está mirror, debo invertir la imagen
+        if (mirrored) {
+            // Invertir el eje X
+            this.#canvasContext.save()
+            this.#canvasContext.scale(-1, 1)
+
+            // Dibuja el fotograma del video en el canvas
+            this.#canvasContext.drawImage(this.#video, -this.#canvas.width, 0, this.#canvas.width, this.#canvas.height);
+
+            // Restaurar el contexto para que no afecte las operaciones futuras
+            this.#canvasContext.restore()
+        }
+        else {
+            // Dibuja el fotograma del video en el canvas
+            this.#canvasContext.drawImage(this.#video, 0, 0, this.#canvas.width, this.#canvas.height);
+        }
+    }
+
     #freeze() {
-        this.#video.style.display = 'block'
-        this.#canvas.style.display = 'none'
+        this.#drawVideoFrameInCanvas()
 
-        this.#canvas.height = this.#video.videoHeight
-        this.#canvas.width = this.#video.videoWidth
-
-        this.#canvasContext.drawImage(this.#video, 0, 0)
+        this.#video.style.display = 'none'
+        this.#canvas.style.display = 'block'
     }
 
     stop(freeze = false) {
@@ -139,36 +162,14 @@ export class Photoshooter {
      */
     async toBlob(format = 'image/png') {
         return new Promise(resolve => {
-            const canvas = document.createElement('canvas')
-            const context = canvas.getContext('2d')
-    
-            if (!context) throw new Error('Photoshooter: Canvas 2D Context is not defined')
-    
-            // Establece el tamaño del canvas para que coincida con el video
-            canvas.width = this.#video.videoWidth;
-            canvas.height = this.#video.videoHeight;
-    
-            const mirrored = this.#isMirrored
-
-            // Si está mirror, debo invertir la imagen
-            if (mirrored) {
-                // Invertir el eje X
-                context.save()
-                context.scale(-1, 1)
-
-                // Dibuja el fotograma del video en el canvas
-                context.drawImage(this.#video, -canvas.width, 0, canvas.width, canvas.height);
-
-                // Restaurar el contexto para que no afecte las operaciones futuras
-                context.restore()
-            }
-            else {
-                // Dibuja el fotograma del video en el canvas
-                context.drawImage(this.#video, 0, 0, canvas.width, canvas.height);
+            // Si esta grabando, toma lo que esta grabando, si esta parado
+            // entonces infiere que le hicieron un freeze
+            if (this.#streaming && this.#stream) {
+                this.#drawVideoFrameInCanvas()
             }
 
             // Convierte el canvas a Blob (imagen PNG)
-            canvas.toBlob(blob => {
+            this.#canvas.toBlob(blob => {
                 if (blob) {
                     resolve(blob)
                 }
