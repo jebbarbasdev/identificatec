@@ -88,4 +88,34 @@ class UserPicture:
             )
             RETURNING id;
         """, [photo_url, embedding, user_id])
+
+    @classmethod
+    def from_nearest_embedding(cls, embedding: List[float]):
+        """
+        Recibe un embedding de una AImage y consulta la base de datos la imagen
+        mas cercana usando diferencia de vectores, junto con su distancia
+        """
         
+        nearest_photo = psql("""
+            SELECT
+                id,
+                photo_url,
+                embedding,
+                created_at,
+                deleted,
+                deleted_at,
+                user_id,
+                             
+                embedding <-> %s::vector AS distance
+            FROM identification.user_picture
+            WHERE NOT deleted 
+            ORDER BY distance
+            LIMIT 1
+        """, [embedding])
+
+        if len(nearest_photo) == 0: return None
+
+        id, photo_url, embedding, created_at, deleted, deleted_at, user_id, distance = nearest_photo[0]
+        user_photo = UserPicture(id, photo_url, embedding, created_at, deleted, deleted_at, user_id)
+
+        return user_photo, distance

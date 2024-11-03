@@ -29,4 +29,20 @@ export class AuthService {
          
         window.location.href = resJson.data.redirect_url
     }
+
+    /**
+     * @param {Blob} blob 
+     */
+    async recognition(blob) {
+        const formData = new FormData()
+        formData.set('photo', blob)
+
+        const res = await fetch('/auth/recognition', {
+            method: 'POST',
+            body: formData
+        })
+
+        const resJson = await res.json()
+        return resJson.data
+    }
 }

@@ -42,6 +42,14 @@ export class DummyQuery {
     }
 
     /**
+     * @param {string} [value] 
+     */
+    text(value){
+        if (value === undefined) return this.prop('textContent')
+        return this.prop('textContent', value)
+    }
+
+    /**
      * @param {string} prop 
      * @param {any} [value]
      */

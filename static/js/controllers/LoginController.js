@@ -22,6 +22,36 @@ const btnLogin = $('#btnLogin')
 const mdlFaceRecognitionElement = $('#mdlFaceRecognition')
 const mdlFaceRecognition = new bootstrap.Modal('#mdlFaceRecognition')
 
+const mdlFaceRecognitionResult = $('#mdlFaceRecognitionResult')
+
+let requestRecognition = true
+async function tryRecognition() {
+    if (requestRecognition) {
+        requestRecognition = false
+
+        mdlFaceRecognitionResult.match.classList.add('text-bg-warning')
+        mdlFaceRecognitionResult.text('Recognizing')
+
+        const photo = await photoshooter.toBlob()
+        const recognitionData = await _authService.recognition(photo)
+
+        if (recognitionData === null) {
+            requestRecognition = true
+        }
+        else {
+            mdlFaceRecognitionResult.match.classList.remove('text-bg-warning')
+            mdlFaceRecognitionResult.match.classList.add('text-bg-success')
+            mdlFaceRecognitionResult.text(recognitionData.user_name)
+
+            console.log(`You're ${recognitionData.user_name} with a distance of ${recognitionData.distance}`)
+
+            setTimeout(() => {
+                window.location.href = recognitionData.redirect_url
+            }, 1000)
+        }
+    }
+}
+
 /** @type {number|null} */
 let detectorInterval = null
 
@@ -29,10 +59,7 @@ const streamingState = new State(false)
 streamingState.addChangeListener(async streaming => {
     if (streaming) {
         await photoshooter.start()
-
-        detectorInterval = setInterval(() => {
-            console.log('Detecto')
-        }, 1000)
+        detectorInterval = setInterval(tryRecognition, 2000)
     }
     else {
         if (detectorInterval !== null) {
@@ -41,6 +68,11 @@ streamingState.addChangeListener(async streaming => {
         }
 
         photoshooter.stop()
+
+        mdlFaceRecognitionResult.match.classList.remove('text-bg-warning', 'text-bg-success')
+        mdlFaceRecognitionResult.text('Smile!')
+
+        requestRecognition = true
     }
 })
 

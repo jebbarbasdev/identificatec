@@ -39,8 +39,11 @@ photos.addChangeListener(newPhotos => {
     
     const newImages = newPhotos.map(newPhoto => {
         const newImg = document.createElement('img')
-        newImg.alt = `Image ${newPhoto.id}`
-        newImg.src = newPhoto.url
+        Object.assign(newImg, {
+            alt: `Image ${newPhoto.id}`,
+            src: newPhoto.url,
+            width: '100',
+        })
 
         return newImg
     })

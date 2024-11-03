@@ -31,7 +31,6 @@ def photos():
     elif request.method == 'POST':
         try:
             photo = request.files.get('photo')
-
             if photo is None: return Result.from_bad_request('Photo not found')
 
             # Uso AImage para obtener las caras (si las hay) de la foto
