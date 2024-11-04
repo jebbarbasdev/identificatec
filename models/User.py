@@ -2,7 +2,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from utils.psql import psql
 from typing import Optional
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from urllib.parse import quote
 
 class User(UserMixin):
@@ -79,9 +79,12 @@ class User(UserMixin):
     def password(self): return self.__password
 
     @property
+    def dicebear_photo_url(self): return f'https://api.dicebear.com/9.x/initials/svg?seed={quote(self.full_name)}'
+
+    @property
     def photo_url(self):
         # If photo url is null, return a placeholder from dicebear 
-        return self.__photo_url or f'https://api.dicebear.com/9.x/initials/svg?seed={quote(self.full_name)}'
+        return self.__photo_url or self.dicebear_photo_url
 
     @property
     def created_at(self): return self.__created_at
@@ -153,3 +156,32 @@ class User(UserMixin):
 
         return User.from_id(user_id)
 
+    @classmethod
+    def sign_up(cls, first_name:str, last_name:str, email:str, password:str) -> int:
+        hashed_password = generate_password_hash(password)
+
+        # Create a user with the hashed_password
+        users = psql("""
+            INSERT INTO auth.user (
+                first_name, 
+                last_name, 
+                email, 
+                password, 
+                role_id
+            ) 
+            VALUES (
+                %s,
+                %s,
+                %s,
+                %s,
+                (
+                    SELECT id FROM auth.role WHERE name = 'User'
+                ) 
+            )
+            RETURNING id;
+        """, [first_name, last_name, email, hashed_password])
+
+        id = users[0][0]
+
+        # Una vez creado el usuario, regresamos un usuario usando este id
+        return cls.from_id(id)

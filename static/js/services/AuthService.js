@@ -24,10 +24,11 @@ export class AuthService {
         const resJson = await res.json()
 
         if (!res.ok) {
-            return snackDanger(resJson.message)
+            snackDanger(resJson.message)
+            return null
         }
          
-        window.location.href = resJson.data.redirect_url
+        return resJson.data
     }
 
     /**
@@ -43,6 +44,29 @@ export class AuthService {
         })
 
         const resJson = await res.json()
+        return resJson.data
+    }
+
+    /**
+     * @param {string} firstName 
+     * @param {string} lastName 
+     * @param {string} email 
+     * @param {string} password 
+     */
+    async signUp(firstName, lastName, email, password) {
+        const res = await fetch('/auth/sign-up', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName, email, password })
+        })
+
+        const resJson = await res.json()
+
+        if (!res.ok) {
+            snackDanger(resJson.message)
+            return null
+        }
+         
         return resJson.data
     }
 }

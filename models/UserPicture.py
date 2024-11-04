@@ -119,3 +119,66 @@ class UserPicture:
         user_photo = UserPicture(id, photo_url, embedding, created_at, deleted, deleted_at, user_id)
 
         return user_photo, distance
+    
+    @classmethod
+    def set_profile_picture(cls, user_picture_id: int) -> str:
+        """
+        Usando el user_id de la user_picture, establece el photo_url del usuario 
+        al photo_url de la user_picture
+        """
+
+        # Obtenemos la photo_url y el user_id de la foto
+        rows = psql("""
+            SELECT 
+                photo_url, 
+                user_id 
+            FROM identification.user_picture
+            WHERE id = %s
+        """, [user_picture_id])
+        photo_url, user_id = rows[0]
+
+        # Usando estos datos, actualizamos el usuario y regresamos el photo_url para 
+        # actualizar el frontend
+        rows2 = psql("""
+            UPDATE auth.user SET
+                photo_url = %s
+            WHERE id = %s
+            RETURNING photo_url
+        """, [photo_url, user_id])
+
+        return rows2[0][0]
+
+    @classmethod
+    def soft_delete(cls, user_picture_id: int):
+        """
+        Soft deletea la foto, es decir, pone su atributo deleted en true,
+        y asigna la fecha de borrado a este momento, como extra, si algun usuario
+        (aunque en realidad solo podria tenerla el dueño) tiene el url como foto de perfil,
+        pone este valor en null. Regresa la cantidad de registros afectados (0,1)
+        """
+
+        # Actualizamos y regresamos el photo_url, para usarlo en el borrado de
+        # foto de perfil
+        photo_urls = psql("""
+            UPDATE identification.user_picture SET
+                deleted = true,
+                deleted_at = %s
+            WHERE
+                id = %s
+            RETURNING photo_url
+        """, [datetime.now(), user_picture_id])
+
+        photo_url = photo_urls[0][0]
+
+        # Usando el photo_url, seteamos en null los url_photo de los usuarios
+        # que la utilicen
+
+        rows = psql("""
+            UPDATE auth.user SET
+                photo_url = null
+            WHERE
+                photo_url = %s
+            RETURNING id
+        """, [photo_url])
+
+        return len(rows)

@@ -46,4 +46,44 @@ export class ProfileService {
 
         return res.ok
     }
+
+    /**
+     * @param {number} id 
+     */
+    async deleteUserPhoto(id) {
+        const res = await fetch('/profile/photos', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        })
+
+        const resJson = await res.json()
+        
+        if (!res.ok) {
+            snackDanger(resJson.message)
+            return null
+        }
+
+        return resJson.data
+    }
+
+    /**
+     * @param {number} id 
+     */
+    async setProfilePhoto(id) {
+        const res = await fetch('/profile/profile-picture', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        })
+
+        const resJson = await res.json()
+        
+        if (!res.ok) {
+            snackDanger(resJson.message)
+            return null
+        }
+
+        return resJson.data
+    }
 }

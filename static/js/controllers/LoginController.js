@@ -43,8 +43,6 @@ async function tryRecognition() {
             mdlFaceRecognitionResult.match.classList.add('text-bg-success')
             mdlFaceRecognitionResult.text(recognitionData.user_name)
 
-            console.log(`You're ${recognitionData.user_name} with a distance of ${recognitionData.distance}`)
-
             setTimeout(() => {
                 window.location.href = recognitionData.redirect_url
             }, 1000)
@@ -100,7 +98,12 @@ btnLogin.on('click', async e => {
     if (password.trim() === '') return snackDanger('Please provide your password to continue')
 
     btnLogin.prop('disabled', true)
-    await _authService.login(email, password)
+    
+    const data = await _authService.login(email, password)
+    if (data !== null) {
+        window.location.href = data.redirect_url
+    }
+
     btnLogin.prop('disabled', false)
 })
 

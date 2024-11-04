@@ -9,11 +9,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/snackbar.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert.dark.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css')}}">
     
     {% block styles %}{% endblock %}
     
-    <script src="{{ url_for('static', filename='js/snackbar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lib/snackbar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lib/sweetalert.min.js') }}"></script>
 </head>
 
 <body data-bs-theme="dark">
